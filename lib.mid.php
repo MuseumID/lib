@@ -77,6 +77,7 @@ class MID {
                         `moi_tms` int(10) NOT NULL COMMENT 'Unix Timestamp',
                         PRIMARY KEY (`moi_uid`)
                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Museum Object Identifiers'";
+            // Following table is not used yet
             $sql[3] = "CREATE TABLE IF NOT EXISTS `".$this->dbconf['pref']."res` (
                         `res_uid` char(36) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Resource UUID',
                         `res_urn` char(36) COLLATE utf8_unicode_ci NOT NULL COMMENT 'MuseumID URN',
