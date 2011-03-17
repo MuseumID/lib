@@ -51,11 +51,11 @@ class MID {
             // Connect to database
             $this->dblink = mysql_connect($dbconf['host'],$dbconf['user'],$dbconf['pass']);
             if (!$this->dblink) {
-                throw new MIDError('ERROR! Connection to host failed: '.mysql_error());
+                throw new MIDError('Connection to host failed: '.mysql_error());
             }
             $this->dbconn = mysql_select_db($dbconf['name'],$this->dblink);
             if (!$this->dbconn) {
-                throw new MIDError('ERROR! Connection to database failed: '.mysql_error());
+                throw new MIDError('Connection to database failed: '.mysql_error());
             }
             $this->dbconf = $dbconf;
             // Create tables if not existing
@@ -88,7 +88,7 @@ class MID {
                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Resources'";
             foreach($sql as $key => $request) {
                 if (!$result = mysql_query($request)) {
-                    throw new MIDError('ERROR! Could not create db: '.mysql_error());
+                    throw new MIDError('Could not create db: '.mysql_error());
                 }
             }
         }
@@ -144,14 +144,14 @@ class MID {
             $result = mysql_query($sql);
             if (!$result) {
                 if(mysql_errno()==1062) {
-                    throw new MIDWarning('NOTE@saveMNS: MNS already exists!');
+                    throw new MIDWarning('MNS already exists.');
                 } else {
-                    throw new MIDError('ERROR@saveMNS: Saving MNS to db failed: '.mysql_error());
+                    throw new MIDError('Saving MNS to db failed: '.mysql_error());
                 }
             }
             return TRUE;
         } else {
-            throw new MIDError('ERROR@saveMNS: No db connection available"');
+            throw new MIDError('No db connection available."');
         }
     }
 
@@ -177,14 +177,14 @@ class MID {
             $result = mysql_query($sql);
             if (!$result) {
                 if(mysql_errno()==1062) {
-                    throw new MIDWarning('NOTE@saveMOI: MOI already exists!');
+                    throw new MIDWarning('MOI already exists.');
                 } else {
-                    throw new MIDError('ERROR@saveMOI: Saving MOI to db failed: '.mysql_error());
+                    throw new MIDError('Saving MOI to db failed: '.mysql_error());
                 }
             }
             return TRUE;
         } else {
-            throw new MIDError('NOTE@saveMOI: No db connection available');
+            throw new MIDError('No db connection available.');
         }
     }
 
@@ -223,7 +223,7 @@ class MID {
     public function validateBDN($bdn) {
         // Check if BDN is a valid domain
         if (!checkdnsrr($bdn,'ANY')) {
-            throw new MIDError('ERROR@validateDBN: BDN could not be validated.');
+            throw new MIDError('BDN is not valid.');
         } else {
             return TRUE;
         }
@@ -238,17 +238,17 @@ class MID {
     public function validateURN($urn) {
         // Check if urn is empty
         if (empty($urn)) {
-            throw new MIDError('No URN submitted');
+            throw new MIDError('No URN submitted.');
         } else {
             $urn = trim($urn);
             // Check if urn consists of three parts
             $urnparts = explode(":",$urn);
             if (count($urnparts) != 3) {
-                throw new MIDError('Submitted value is not a valid URN');
+                throw new MIDError('Submitted value is not a valid URN.');
             } else {
                 // Check if namespace is supported
                 if ($urnparts[1] != "mns" && $urnparts[1] != "moi") {
-                    throw new MIDError('Submitted URN namespace identifier '.$urnparts[1].' is not supported');
+                    throw new MIDError('Submitted URN namespace identifier '.$urnparts[1].' is not supported.');
                 } else {
                     // Check if uuid consists of five valid parts
                     $idparts = explode("-",$urnparts[2]);
@@ -258,7 +258,7 @@ class MID {
                     if (isset($idparts[3])) {$strl3 = strlen($idparts[3]);} else {$strl3 = 0;}
                     if (isset($idparts[4])) {$strl4 = strlen($idparts[4]);} else {$strl4 = 0;}
                     if ($strl0 != 8 || $strl1 != 4 || $strl2 != 4 || $strl3 != 4 || $strl4 != 12 || isset($idparts[5])) {
-                        throw new MIDError('Submitted URN is not valid');
+                        throw new MIDError('Submitted URN is not valid.');
                     } else {
                         return TRUE;
                     }
@@ -288,16 +288,16 @@ class MID {
                     $sql .= " AND mns_uid = moi_mns";
                     break;
                 default:
-                    throw new MIDError('URN is invalid or unsupported');
+                    throw new MIDError('URN is invalid or unsupported.');
             }
             // Select
             $result = mysql_query($sql);
             if (!$result) {
-                throw new MIDError('ERROR@resolveURN: Resolving URN from db failed: '.mysql_error());
+                throw new MIDError('Resolving URN from db failed: '.mysql_error());
             }
             $numrows = mysql_num_rows($result); 
             if (!$numrows || $numrows<1) {
-                throw new MIDError('ERROR@resolveURN: URN not registered.');
+                throw new MIDError('Submitted URN is not registered.');
             }
             $row = mysql_fetch_assoc($result);
             // Create result object
@@ -313,7 +313,7 @@ class MID {
                     break;
             }
         } else {
-            throw new MIDError('NOTE@resolveURN: No db connection available');
+            throw new MIDError('No db connection available.');
         }
     }
 
