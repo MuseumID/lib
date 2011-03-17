@@ -304,13 +304,11 @@ class MID {
             switch ($urnparts[1]) {
                 case "mns":
                     $bdn = $row['mns_sld'].".".$row['mns_tld'];
-                    $mns = new MNS($bdn);
-                    $mns->time = $row['mns_tms'];
+                    $mns = new MNS($bdn,$row['mns_tms']);
                     return $mns;
                     break;
                 case "moi":
-                    $moi = new MOI($row['moi_ivn'],$row['moi_mns']);
-                    $moi->time = $row['moi_tms'];
+                    $moi = new MOI($row['moi_ivn'],$row['moi_mns'],$row['moi_tms']);
                     return $moi;
                     break;
             }
@@ -343,15 +341,20 @@ class MNS extends UUID {
     /**
     * Constructor, creates an MNS object
     * @param bdn a BDN as a string
+    * @param tms an optional UNIX timestamp
     * @author Georg Hohmann
     */
-    function __construct($bdn) {
+    function __construct($bdn,$tms=NULL) {
         // Calling parent constructor for constructing an UUID V5
         parent::__construct(self::mintName(self::SHA1,$bdn,'6ba7b810-9dad-11d1-80b4-00c04fd430c8'));
         // Setting variables
         $this->bdn = $bdn;
         $this->urn = "urn:mns:".$this->__toString();
-        $this->time = time();
+        if(empty($tms)) {
+            $this->time = time();
+        } else {        
+            $this->time = $tms;
+        }
 	}
 
     /**
@@ -384,7 +387,7 @@ class MOI extends UUID {
 
     protected $urn = NULL;
     protected $ivn = NULL;
-    public $time = NULL;
+    protected $time = NULL;
     protected $mns = NULL;
     protected $mnsurn = NULL;
 
@@ -392,9 +395,10 @@ class MOI extends UUID {
     * Constructor, creates an MOI object
     * @param ivn an inventory number as a string
     * @param mns a MNS UUID as a string
+    * @param tms an optional UNIX timestamp
     * @author Georg Hohmann
     */
-    function __construct($ivn,$mns) {
+    function __construct($ivn,$mns,$tms=NULL) {
         // Calling parent constructor for constructing an UUID V5
         parent::__construct(self::mintName(self::SHA1,$ivn,$mns));
         // Setting variables
@@ -402,7 +406,11 @@ class MOI extends UUID {
         $this->mns = $mns;
         $this->mnsurn = "urn:mns:".$mns;
         $this->urn = "urn:moi:".$this->__toString();
-        $this->time = time();
+        if(empty($tms)) {
+            $this->time = time();
+        } else {        
+            $this->time = $tms;
+        }
     }
 
     /**
